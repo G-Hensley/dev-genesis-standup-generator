@@ -1,7 +1,7 @@
 {
   "name": "standup-generator",
   "version": "0.1.0",
-  "description": "CLI tool that generates professional standup updates by parsing git commit history across multiple repositories",
+  "description": "CLI tool that generates standup updates from git commit history across repos",
   "main": "src/index.js",
   "bin": {
     "standup": "bin/standup.js"
