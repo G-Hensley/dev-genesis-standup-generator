@@ -1,0 +1,179 @@
+{
+  "project": {
+    "name": "standup-generator",
+    "description": "CLI tool that generates professional standup updates by parsing git commit history across multiple repositories",
+    "generated": "2025-12-10"
+  },
+  "milestones": [
+    {
+      "name": "Phase 1: Foundation",
+      "description": "Project setup, core architecture, and basic git commit retrieval"
+    },
+    {
+      "name": "Phase 2: Core Features",
+      "description": "MVP implementation with intelligent parsing, multi-repo support, and output formatting"
+    },
+    {
+      "name": "Phase 3: Polish & Launch",
+      "description": "Error handling, documentation, testing, and NPM publication"
+    }
+  ],
+  "issues": [
+    {
+      "title": "Initialize project with npm and folder structure",
+      "body": "## Description\n\nSet up the initial project structure following the package layout defined in the specification. This establishes the foundation for all subsequent development.\n\n## Acceptance Criteria\n\n- [ ] npm init with appropriate package.json metadata\n- [ ] Create folder structure: `bin/`, `src/`, `test/`\n- [ ] Create placeholder files: `bin/standup.js`, `src/index.js`, `src/git.js`, `src/parser.js`, `src/formatter.js`, `src/utils.js`\n- [ ] Add .gitignore for node_modules and common files\n- [ ] Set `bin` field in package.json pointing to `bin/standup.js`\n- [ ] Add shebang `#!/usr/bin/env node` to bin/standup.js\n\n## Technical Notes\n\n- Package name: `standup-generator`\n- Use ES modules or CommonJS (decide based on preference)\n- Set minimum Node.js version to 14+\n\n## Resources\n\n- [npm package.json docs](https://docs.npmjs.com/cli/v10/configuring-npm/package-json)",
+      "labels": ["phase-1", "setup", "priority: critical"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Install and configure core dependencies",
+      "body": "## Description\n\nInstall the three core dependencies specified for the project: commander for CLI argument parsing, simple-git for git operations, and clipboardy for clipboard functionality.\n\n## Acceptance Criteria\n\n- [ ] Install `commander` as production dependency\n- [ ] Install `simple-git` as production dependency\n- [ ] Install `clipboardy` as production dependency\n- [ ] Install dev dependencies: `jest` for testing\n- [ ] Verify all packages install correctly on Node.js 14+\n- [ ] Add test script to package.json\n\n## Technical Notes\n\n- Use latest stable versions of each package\n- Consider adding `eslint` and `prettier` for code quality\n\n## Dependencies\n\n- Depends on: #1 (Project initialization)",
+      "labels": ["phase-1", "setup", "priority: critical"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Set up CLI entry point with commander",
+      "body": "## Description\n\nCreate the CLI entry point using commander with all specified flags and options. This establishes the command interface that users will interact with.\n\n## Acceptance Criteria\n\n- [ ] CLI responds to `standup` command when linked locally\n- [ ] `--since` flag accepts time range string (default: \"24 hours ago\")\n- [ ] `--all-authors` flag is boolean, defaults to false\n- [ ] `--copy` flag is boolean, defaults to false\n- [ ] `-h` / `--help` shows usage information\n- [ ] `-V` / `--version` shows package version\n- [ ] Invalid flags show helpful error message\n\n## Technical Notes\n\n- Use commander's `.option()` for each flag\n- Parse options and pass to main orchestration function\n- Example: `standup --since \"2 days ago\" --all-authors --copy`\n\n## Resources\n\n- [Commander.js docs](https://github.com/tj/commander.js)\n\n## Dependencies\n\n- Depends on: #2 (Dependencies installed)",
+      "labels": ["phase-1", "setup", "area: cli", "priority: critical"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Implement basic git commit retrieval for single repository",
+      "body": "## Description\n\nCreate the core git functionality to retrieve commits from the current repository within a specified time range. This is the foundation of the entire tool.\n\n## Acceptance Criteria\n\n- [ ] Function `getCommits(options)` in `src/git.js`\n- [ ] Retrieves commits from current working directory\n- [ ] Respects `--since` time range parameter\n- [ ] Returns array of commit objects with: hash, message, author, date\n- [ ] Works with standard git repositories\n- [ ] Handles repositories with no commits gracefully\n\n## Technical Notes\n\n- Use `simple-git` library\n- `git.log()` method with `--since` option\n- Return raw commit data; filtering happens in parser\n\n## Resources\n\n- [simple-git documentation](https://github.com/steveukx/git-js)\n\n## Dependencies\n\n- Depends on: #2 (Dependencies installed)",
+      "labels": ["phase-1", "feature", "area: backend", "priority: critical"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Implement current git user detection and filtering",
+      "body": "## Description\n\nAdd functionality to detect the current git user's email/name and filter commits to only show their work (default behavior).\n\n## Acceptance Criteria\n\n- [ ] Function to get current git user email from git config\n- [ ] Filter commits by author email by default\n- [ ] When `--all-authors` is true, skip author filtering\n- [ ] Handle case where git user is not configured\n- [ ] Match author by email (more reliable than name)\n\n## Technical Notes\n\n- Use `simple-git` to read git config\n- `git config user.email` equivalent\n- Author matching should be case-insensitive\n\n## Dependencies\n\n- Depends on: #4 (Basic commit retrieval)",
+      "labels": ["phase-1", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Create time range parsing utility",
+      "body": "## Description\n\nImplement utility function in `src/utils.js` to parse human-readable time ranges into git-compatible date formats.\n\n## Acceptance Criteria\n\n- [ ] Parse \"24 hours ago\" (default)\n- [ ] Parse \"2 days ago\"\n- [ ] Parse \"1 week ago\"\n- [ ] Parse day names like \"Friday\"\n- [ ] Pass through already-valid git date formats\n- [ ] Handle invalid inputs with helpful error\n\n## Technical Notes\n\n- Git's `--since` is flexible; most natural language works\n- May be able to pass through to git directly\n- Test edge cases around weekends/holidays\n\n## Dependencies\n\n- Depends on: #1 (Project setup)",
+      "labels": ["phase-1", "feature", "area: backend", "priority: medium"],
+      "milestone": "Phase 1: Foundation"
+    },
+    {
+      "title": "Implement merge commit filtering",
+      "body": "## Description\n\nAdd filtering logic in `src/parser.js` to automatically remove merge commits from the output, keeping standup updates focused on actual work.\n\n## Acceptance Criteria\n\n- [ ] Filter out commits starting with \"Merge branch\"\n- [ ] Filter out commits starting with \"Merge pull request\"\n- [ ] Filter out commits matching common merge patterns\n- [ ] Preserve all non-merge commits\n- [ ] Case-insensitive matching\n\n## Technical Notes\n\n- Check commit message prefix\n- Common patterns: `Merge branch`, `Merge pull request`, `Merge remote-tracking`\n- Consider regex pattern for flexibility\n\n## Dependencies\n\n- Depends on: #4 (Basic commit retrieval)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement conventional commit prefix parsing",
+      "body": "## Description\n\nParse conventional commit prefixes (feat:, fix:, docs:, etc.) from commit messages to preserve them in the formatted output.\n\n## Acceptance Criteria\n\n- [ ] Detect `feat:` prefix and preserve it\n- [ ] Detect `fix:` prefix and preserve it\n- [ ] Detect `docs:` prefix and preserve it\n- [ ] Detect `chore:` prefix and preserve it\n- [ ] Detect `test:` prefix and preserve it\n- [ ] Detect `refactor:` prefix and preserve it\n- [ ] Handle commits without conventional prefix (show as-is)\n- [ ] Handle scope syntax: `feat(auth):` etc.\n\n## Technical Notes\n\n- Regex pattern: `/^(feat|fix|docs|chore|test|refactor)(\\([^)]+\\))?:\\s*/i`\n- Don't require conventional commits; just parse when present\n- Keep the prefix in output for categorization\n\n## Dependencies\n\n- Depends on: #4 (Basic commit retrieval)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement commit message truncation",
+      "body": "## Description\n\nAdd message truncation logic to keep commit messages readable at 80 characters, adding ellipsis for longer messages.\n\n## Acceptance Criteria\n\n- [ ] Truncate messages longer than 80 characters\n- [ ] Add ellipsis (`...`) to truncated messages\n- [ ] Preserve message intent (don't cut mid-word if possible)\n- [ ] Count only the message body, not any prefixes added by formatter\n- [ ] Messages at exactly 80 chars remain unchanged\n\n## Technical Notes\n\n- Consider word-boundary truncation for cleaner output\n- Ellipsis counts toward the 80 character limit\n- First line of commit message only (ignore body)\n\n## Dependencies\n\n- Depends on: #8 (Conventional commit parsing)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: medium"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement multi-repository detection",
+      "body": "## Description\n\nAdd functionality to detect git repositories when the tool is run from a parent directory containing multiple repos. Scan one level deep only.\n\n## Acceptance Criteria\n\n- [ ] Detect if current directory is a git repository\n- [ ] If not a repo, scan immediate subdirectories for `.git` folders\n- [ ] Return list of detected repository paths with names\n- [ ] Show message indicating which repos were found\n- [ ] Handle case where no repos are found\n- [ ] Only scan one level deep (not recursive)\n\n## Technical Notes\n\n- Check for `.git` directory existence\n- Use `fs.readdir` to scan subdirectories\n- Repository name = directory name\n\n## Dependencies\n\n- Depends on: #4 (Basic commit retrieval)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement commit retrieval across multiple repositories",
+      "body": "## Description\n\nExtend git.js to retrieve commits from multiple detected repositories and aggregate the results.\n\n## Acceptance Criteria\n\n- [ ] Iterate through detected repositories\n- [ ] Retrieve commits from each repo with same time range\n- [ ] Apply same author filtering across all repos\n- [ ] Associate commits with their repository name\n- [ ] Handle repos with no commits in timeframe gracefully\n- [ ] Aggregate results into single data structure\n\n## Technical Notes\n\n- Create simple-git instance per repository path\n- Return structure: `{ repoName: [commits], ... }`\n- Empty repos should appear in results but with empty array\n\n## Dependencies\n\n- Depends on: #10 (Multi-repo detection)\n- Depends on: #5 (User filtering)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Create basic markdown formatter for single repository",
+      "body": "## Description\n\nImplement the formatter module to generate markdown output for a single repository's commits.\n\n## Acceptance Criteria\n\n- [ ] Generate date header: \"Yesterday (Dec 10, 2024):\" format\n- [ ] Generate bullet points for each commit\n- [ ] No emojis in output (professional format)\n- [ ] Commits appear as `• message` format\n- [ ] Empty line after header\n- [ ] Output is valid markdown\n\n## Technical Notes\n\n- Use bullet character `•` (Unicode) not `-` or `*`\n- Date format: \"Yesterday (Month DD, YYYY)\" or \"Last 2 days (Dec 9-10, 2024)\"\n- Handle single vs multiple day ranges\n\n## Dependencies\n\n- Depends on: #9 (Message truncation)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Extend markdown formatter for multiple repositories",
+      "body": "## Description\n\nExtend the formatter to handle multiple repositories, grouping commits under repository name headers.\n\n## Acceptance Criteria\n\n- [ ] Repository name as subheader (no special formatting, just name:)\n- [ ] Commits grouped under their repository\n- [ ] Empty line between repository sections\n- [ ] Skip repositories with no commits\n- [ ] Single repo mode doesn't show repo name header\n- [ ] Alphabetical ordering of repositories\n\n## Technical Notes\n\n- Format per spec:\n  ```\n  backend-api:\n  • commit 1\n  • commit 2\n  \n  frontend:\n  • commit 1\n  ```\n\n## Dependencies\n\n- Depends on: #12 (Single repo formatter)\n- Depends on: #11 (Multi-repo commit retrieval)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: high"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement clipboard copy functionality",
+      "body": "## Description\n\nAdd the `--copy` flag functionality to copy the generated standup output to the system clipboard.\n\n## Acceptance Criteria\n\n- [ ] When `--copy` flag is passed, copy output to clipboard\n- [ ] Still print output to console when copying\n- [ ] Show confirmation message: \"Copied to clipboard!\"\n- [ ] Handle clipboard errors gracefully\n- [ ] Works on macOS, Linux, and Windows\n\n## Technical Notes\n\n- Use `clipboardy` library\n- `clipboardy.writeSync()` for synchronous copy\n- Test on multiple platforms if possible\n\n## Resources\n\n- [clipboardy docs](https://github.com/sindresorhus/clipboardy)\n\n## Dependencies\n\n- Depends on: #13 (Multi-repo formatter)",
+      "labels": ["phase-2", "feature", "area: cli", "priority: medium"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Wire up main orchestration in index.js",
+      "body": "## Description\n\nConnect all modules together in src/index.js to create the complete workflow from CLI input to formatted output.\n\n## Acceptance Criteria\n\n- [ ] Parse CLI options from commander\n- [ ] Detect single or multi-repo mode\n- [ ] Retrieve commits with appropriate filtering\n- [ ] Process commits through parser\n- [ ] Format output with formatter\n- [ ] Handle copy flag if specified\n- [ ] Return/print final output\n\n## Technical Notes\n\n- Main function should be async\n- Export main function for testing\n- Call from bin/standup.js\n\n## Dependencies\n\n- Depends on: #3 (CLI setup)\n- Depends on: #14 (Clipboard copy)\n- Depends on: #13 (Multi-repo formatter)",
+      "labels": ["phase-2", "feature", "area: backend", "priority: critical"],
+      "milestone": "Phase 2: Core Features"
+    },
+    {
+      "title": "Implement error handling for non-git directory",
+      "body": "## Description\n\nAdd clear error messaging when the tool is run from a directory that is not a git repository and has no git repositories in subdirectories.\n\n## Acceptance Criteria\n\n- [ ] Clear error message: \"Error: Not a git repository (or any parent/child directories)\"\n- [ ] Exit with non-zero status code\n- [ ] Suggest user run from within a git repository\n- [ ] Don't show stack trace to user\n- [ ] Helpful hint about running from correct directory\n\n## Technical Notes\n\n- Check for git repo before attempting any operations\n- Use process.exit(1) for error exit\n- Consider colored output for error messages\n\n## Dependencies\n\n- Depends on: #15 (Main orchestration)",
+      "labels": ["phase-3", "enhancement", "area: cli", "priority: high"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Implement \"no commits found\" messaging",
+      "body": "## Description\n\nAdd helpful messaging when no commits are found within the specified time range.\n\n## Acceptance Criteria\n\n- [ ] Show message: \"No commits found in the last [time range]\"\n- [ ] If single repo: show repo name in message\n- [ ] If multi-repo: list which repos were checked\n- [ ] Suggest trying a different time range\n- [ ] Exit with success (0) status, not error\n- [ ] Don't show empty output format\n\n## Technical Notes\n\n- This is informational, not an error condition\n- User might have legitimately had no commits\n- Consider: \"Try running with --since '1 week ago'\" hint\n\n## Dependencies\n\n- Depends on: #15 (Main orchestration)",
+      "labels": ["phase-3", "enhancement", "area: cli", "priority: medium"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Add repository detection status output",
+      "body": "## Description\n\nShow users which repositories were detected and processed before displaying the standup output.\n\n## Acceptance Criteria\n\n- [ ] Print \"Found N repositories: repo1, repo2, ...\"\n- [ ] Show before standup output, not after\n- [ ] In single-repo mode, show \"Running in [repo-name]\"\n- [ ] Use subtle formatting (dim/gray if terminal supports it)\n- [ ] Don't interfere with `--copy` functionality\n\n## Technical Notes\n\n- This is informational output, separate from the standup itself\n- Only the standup content should be copied, not the status message\n- Consider stderr for status, stdout for output\n\n## Dependencies\n\n- Depends on: #15 (Main orchestration)",
+      "labels": ["phase-3", "enhancement", "area: cli", "priority: low"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Create unit tests for parser module",
+      "body": "## Description\n\nWrite comprehensive unit tests for the parser module covering merge filtering, conventional commit parsing, and message truncation.\n\n## Acceptance Criteria\n\n- [ ] Test merge commit detection (various patterns)\n- [ ] Test conventional commit prefix parsing\n- [ ] Test scope syntax parsing: `feat(scope):`\n- [ ] Test message truncation at 80 chars\n- [ ] Test word-boundary truncation\n- [ ] Test handling of commits without conventional prefixes\n- [ ] All tests pass\n\n## Technical Notes\n\n- Use Jest for testing\n- Create test fixtures for various commit message formats\n- Aim for >90% coverage of parser module\n\n## Dependencies\n\n- Depends on: #9 (Message truncation)",
+      "labels": ["phase-3", "area: testing", "priority: high"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Create unit tests for formatter module",
+      "body": "## Description\n\nWrite unit tests for the formatter module covering single and multi-repository output formatting.\n\n## Acceptance Criteria\n\n- [ ] Test single repo markdown output format\n- [ ] Test multi-repo markdown output format\n- [ ] Test date header formatting\n- [ ] Test empty commits handling\n- [ ] Test repo alphabetical ordering\n- [ ] Test bullet point formatting\n- [ ] All tests pass\n\n## Technical Notes\n\n- Use Jest for testing\n- Use snapshot testing for complex output\n- Test edge cases: empty repos, single commit, etc.\n\n## Dependencies\n\n- Depends on: #13 (Multi-repo formatter)",
+      "labels": ["phase-3", "area: testing", "priority: high"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Create integration tests for git module",
+      "body": "## Description\n\nWrite integration tests for the git module using a test repository fixture.\n\n## Acceptance Criteria\n\n- [ ] Test commit retrieval with mock git repo\n- [ ] Test user filtering functionality\n- [ ] Test multi-repo detection\n- [ ] Test time range filtering\n- [ ] Test handling of empty repositories\n- [ ] All tests pass in CI environment\n\n## Technical Notes\n\n- Create temporary git repos in test setup\n- Clean up test repos in teardown\n- May need to mock simple-git for some tests\n\n## Dependencies\n\n- Depends on: #11 (Multi-repo commit retrieval)",
+      "labels": ["phase-3", "area: testing", "priority: medium"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Write README documentation",
+      "body": "## Description\n\nCreate comprehensive README.md with installation instructions, usage examples, and all available options.\n\n## Acceptance Criteria\n\n- [ ] Project description and purpose\n- [ ] Installation instructions (npm install -g)\n- [ ] Basic usage examples\n- [ ] All CLI flags documented with examples\n- [ ] Single and multi-repo usage explained\n- [ ] Output format examples\n- [ ] Requirements section (Node.js 14+, git)\n- [ ] License information\n\n## Technical Notes\n\n- Follow standard npm package README format\n- Include badges: npm version, license\n- Keep it concise but comprehensive\n\n## Dependencies\n\n- Depends on: #15 (Main orchestration complete)",
+      "labels": ["phase-3", "documentation", "priority: high"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Configure npm package for publication",
+      "body": "## Description\n\nPrepare package.json and related files for publication to npm registry.\n\n## Acceptance Criteria\n\n- [ ] Package name available on npm or scoped appropriately\n- [ ] Version set to 1.0.0 for initial release\n- [ ] Description field filled in\n- [ ] Keywords added for discoverability\n- [ ] Repository URL set\n- [ ] Author and license fields complete\n- [ ] Main and bin fields correct\n- [ ] Files field includes only necessary files\n- [ ] .npmignore or files whitelist configured\n\n## Technical Notes\n\n- Check name availability: `npm view standup-generator`\n- May need scoped name: `@username/standup-generator`\n- Exclude test files and dev artifacts from package\n\n## Dependencies\n\n- Depends on: #22 (README documentation)",
+      "labels": ["phase-3", "setup", "area: infrastructure", "priority: high"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Test cross-platform compatibility",
+      "body": "## Description\n\nVerify the tool works correctly on macOS, Linux, and Windows platforms.\n\n## Acceptance Criteria\n\n- [ ] Tool runs correctly on macOS\n- [ ] Tool runs correctly on Linux\n- [ ] Tool runs correctly on Windows\n- [ ] Clipboard functionality works on all platforms\n- [ ] Path handling works on all platforms\n- [ ] Git operations work on all platforms\n- [ ] No platform-specific bugs\n\n## Technical Notes\n\n- Test Windows path handling (backslashes)\n- Test clipboard on each platform (clipboardy should handle this)\n- Can use GitHub Actions matrix for automated testing\n\n## Dependencies\n\n- Depends on: #15 (Main orchestration complete)",
+      "labels": ["phase-3", "area: testing", "priority: medium"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Set up GitHub Actions CI pipeline",
+      "body": "## Description\n\nCreate GitHub Actions workflow to run tests on push and pull requests.\n\n## Acceptance Criteria\n\n- [ ] Workflow runs on push to main\n- [ ] Workflow runs on pull requests\n- [ ] Tests run on Node.js 14, 16, 18, 20\n- [ ] Tests run on Ubuntu, macOS, Windows\n- [ ] Lint check included\n- [ ] Build/test status badge in README\n\n## Technical Notes\n\n- Use matrix strategy for Node versions and OS\n- Cache node_modules for faster runs\n- Consider separate publish workflow\n\n## Dependencies\n\n- Depends on: #19 (Parser tests)\n- Depends on: #20 (Formatter tests)",
+      "labels": ["phase-3", "area: ci-cd", "priority: medium"],
+      "milestone": "Phase 3: Polish & Launch"
+    },
+    {
+      "title": "Publish initial version to npm",
+      "body": "## Description\n\nPublish version 1.0.0 of standup-generator to the npm registry.\n\n## Acceptance Criteria\n\n- [ ] All tests passing\n- [ ] README complete and accurate\n- [ ] Package installs correctly via `npm install -g`\n- [ ] CLI works after global install\n- [ ] Version 1.0.0 published successfully\n- [ ] Package page looks correct on npmjs.com\n\n## Technical Notes\n\n- Run `npm publish` (or `npm publish --access public` for scoped)\n- Verify with `npm view [package-name]`\n- Test install in clean environment\n\n## Dependencies\n\n- Depends on: #23 (npm configuration)\n- Depends on: #25 (CI pipeline)",
+      "labels": ["phase-3", "area: infrastructure", "priority: critical"],
+      "milestone": "Phase 3: Polish & Launch"
+    }
+  ]
+}

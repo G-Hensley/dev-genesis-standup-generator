@@ -3,58 +3,58 @@
 
 # Default owner for everything in the repo
 # Replace OWNER with your GitHub username or team
-* @OWNER
+* @G-Hensley
 
 # Examples of more granular ownership (uncomment and customize as needed):
 
 # Documentation
-# /docs/ @OWNER
-# *.md @OWNER
+# /docs/ @G-Hensley
+# *.md @G-Hensley
 
 # GitHub configuration
-# /.github/ @OWNER
+# /.github/ @G-Hensley
 
 # CI/CD workflows
-# /.github/workflows/ @OWNER
+# /.github/workflows/ @G-Hensley
 
 # Security-sensitive files
-# /SECURITY.md @OWNER
-# /.github/workflows/security-scan.yml @OWNER
+# /SECURITY.md @G-Hensley
+# /.github/workflows/security-scan.yml @G-Hensley
 
 # Configuration files
-# /*.json @OWNER
-# /*.yaml @OWNER
-# /*.yml @OWNER
+# /*.json @G-Hensley
+# /*.yaml @G-Hensley
+# /*.yml @G-Hensley
 
 # Source code (customize for your structure)
-# /src/ @OWNER
-# /lib/ @OWNER
-# /app/ @OWNER
+# /src/ @G-Hensley
+# /lib/ @G-Hensley
+# /app/ @G-Hensley
 
 # Tests
-# /tests/ @OWNER
-# /test/ @OWNER
-# /__tests__/ @OWNER
-# *.test.* @OWNER
-# *.spec.* @OWNER
+# /tests/ @G-Hensley
+# /test/ @G-Hensley
+# /__tests__/ @G-Hensley
+# *.test.* @G-Hensley
+# *.spec.* @G-Hensley
 
 # Infrastructure
-# /infrastructure/ @OWNER
-# /terraform/ @OWNER
-# /k8s/ @OWNER
-# Dockerfile* @OWNER
-# docker-compose* @OWNER
+# /infrastructure/ @G-Hensley
+# /terraform/ @G-Hensley
+# /k8s/ @G-Hensley
+# Dockerfile* @G-Hensley
+# docker-compose* @G-Hensley
 
 # Database
-# /migrations/ @OWNER
-# /db/ @OWNER
-# /prisma/ @OWNER
+# /migrations/ @G-Hensley
+# /db/ @G-Hensley
+# /prisma/ @G-Hensley
 
 # ============================================================================
 # SETUP INSTRUCTIONS (Delete this section when customizing)
 # ============================================================================
 #
-# 1. Replace @OWNER with your GitHub username (e.g., @johndoe)
+# 1. Replace @G-Hensley with your GitHub username (e.g., @johndoe)
 # 2. For organizations, you can use team names (e.g., @org/team-name)
 # 3. Uncomment and customize the sections that apply to your project
 # 4. Add additional patterns as your project structure requires

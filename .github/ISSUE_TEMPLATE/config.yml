@@ -6,10 +6,10 @@ blank_issues_enabled: false
 
 contact_links:
   - name: Security Vulnerabilities
-    url: https://github.com/OWNER/REPO/security/policy
+    url: https://github.com/G-Hensley/dev-genesis-standup-generator/security/policy
     about: Please report security vulnerabilities through our security policy. Do not create public issues for security concerns.
   - name: Questions & Support
-    url: https://github.com/OWNER/REPO/discussions
+    url: https://github.com/G-Hensley/dev-genesis-standup-generator/discussions
     about: Ask questions and get help from the community in GitHub Discussions.
   # Uncomment and customize the links below as needed for your project:
   # - name: Discord Community
