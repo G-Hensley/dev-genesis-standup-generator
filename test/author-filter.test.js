@@ -155,4 +155,13 @@ describe('author filtering', () => {
       }
     });
   });
+
+  test('returns empty array for empty repositories', async () => {
+    const { repoDir } = await createRepo();
+
+    await withRepo(repoDir, async () => {
+      const commits = await getCommits({ since: '1 day ago' });
+      expect(commits).toEqual([]);
+    });
+  });
 });
