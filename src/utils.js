@@ -13,11 +13,16 @@ const DAY_NAMES = [
   'saturday',
 ];
 
+const RELATIVE_REGEX = /^(\d+)\s+(hour|hours|day|days|week|weeks)\s+ago$/i;
+const ISO_LIKE = /^\d{4}-\d{2}-\d{2}/;
+const RFC_2822_LIKE = /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/;
+
 /**
  * Normalizes human-readable time ranges to git-friendly --since values.
  * Accepts relative phrases ("24 hours ago", "2 days ago", "1 week ago") and day names ("Friday").
  * If the input already looks like a git-compatible date, it is passed through.
- * Throws on empty or unsupported values with a helpful message.
+ * Returns a default value of "24 hours ago" for empty or missing inputs.
+ * Throws on unsupported non-empty values with a helpful message.
  *
  * @param {string|undefined} input
  * @returns {string} git-compatible since value
@@ -36,14 +41,11 @@ function parseSince(input) {
   }
 
   // Recognized relative phrases that git accepts directly
-  const RELATIVE_REGEX = /^(\d+)\s+(hour|hours|day|days|week|weeks)\s+ago$/i;
   if (RELATIVE_REGEX.test(value)) {
     return lower;
   }
 
   // Heuristic: allow common git date formats to pass through
-  const ISO_LIKE = /^\d{4}-\d{2}-\d{2}/;
-  const RFC_2822_LIKE = /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/;
   if (ISO_LIKE.test(value) || RFC_2822_LIKE.test(value)) {
     return value;
   }
