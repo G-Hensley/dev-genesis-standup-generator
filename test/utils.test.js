@@ -7,6 +7,11 @@ describe('parseSince', () => {
     expect(parseSince('   ')).toBe('24 hours ago');
   });
 
+  test('defaults to 24 hours ago on non-string input', () => {
+    expect(parseSince(null)).toBe('24 hours ago');
+    expect(parseSince(123)).toBe('24 hours ago');
+  });
+
   test('passes through recognized relative phrases', () => {
     expect(parseSince('24 hours ago')).toBe('24 hours ago');
     expect(parseSince('2 days ago')).toBe('2 days ago');
