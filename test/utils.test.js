@@ -26,6 +26,7 @@ describe('parseSince', () => {
 
   test('passes through ISO and RFC2822-like dates', () => {
     expect(parseSince('2024-01-01')).toBe('2024-01-01');
+    expect(parseSince('2024-01-01T12:00:00Z')).toBe('2024-01-01T12:00:00Z');
     expect(parseSince('Tue, 15 Nov 1994 08:12:31 GMT')).toBe('Tue, 15 Nov 1994 08:12:31 GMT');
   });
 

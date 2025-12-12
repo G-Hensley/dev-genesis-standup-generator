@@ -13,7 +13,7 @@ const DAY_NAMES = [
   'saturday',
 ];
 
-const RELATIVE_REGEX = /^(\d+)\s+(hour|hours|day|days|week|weeks)\s+ago$/i;
+const RELATIVE_REGEX = /^(\d+)\s+(hour|hours|day|days|week|weeks|month|months|year|years)\s+ago$/i;
 const ISO_LIKE = /^\d{4}-\d{2}-\d{2}/;
 const RFC_2822_LIKE = /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/;
 
