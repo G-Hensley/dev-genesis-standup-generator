@@ -32,7 +32,7 @@ async function getCurrentUserEmail() {
  * @param {string} [options.since] - Time range (e.g., "2 days ago" or ISO string) to limit commits.
  * @param {boolean} [options.allAuthors=false] - When true, skip author email filtering.
  * @returns {Promise<Array<{hash: string, message: string, author: string, date: string}>>}
- * Resolves to normalized commit metadata. Empty array if repo has no commits.
+ * Resolves to normalized commit metadata (hash, message, author, date). Empty array if repo has no commits.
  * @throws Propagates any git errors not related to empty history.
  */
 async function getCommits({ since, allAuthors = false } = {}) {

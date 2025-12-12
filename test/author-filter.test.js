@@ -25,6 +25,29 @@ async function withRepo(repoDir, fn) {
   }
 }
 
+async function withTempEnv(overrides, fn) {
+  const original = {};
+  Object.keys(overrides).forEach((key) => {
+    original[key] = process.env[key];
+  });
+
+  Object.entries(overrides).forEach(([key, value]) => {
+    process.env[key] = value;
+  });
+
+  try {
+    await fn();
+  } finally {
+    Object.entries(original).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    });
+  }
+}
+
 function recentIsoDate(hoursAgo = 0) {
   return new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
 }
@@ -126,33 +149,24 @@ describe('author filtering', () => {
     await git.addConfig('user.email', '');
 
     await withRepo(repoDir, async () => {
-      const originalEnv = {
-        GIT_CONFIG_GLOBAL: process.env.GIT_CONFIG_GLOBAL,
-        GIT_CONFIG_SYSTEM: process.env.GIT_CONFIG_SYSTEM,
-        HOME: process.env.HOME,
-        XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME,
-      };
-
       const tempHome = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'standup-home-'));
       repoDirs.push(tempHome);
 
-      process.env.GIT_CONFIG_GLOBAL = path.join(tempHome, 'nonexistent');
-      process.env.GIT_CONFIG_SYSTEM = '/dev/null';
-      process.env.HOME = tempHome;
-      process.env.XDG_CONFIG_HOME = tempHome;
+      await withTempEnv(
+        {
+          GIT_CONFIG_GLOBAL: path.join(tempHome, 'nonexistent'),
+          GIT_CONFIG_SYSTEM: '/dev/null',
+          HOME: tempHome,
+          XDG_CONFIG_HOME: tempHome,
+        },
+        async () => {
+          const email = await getCurrentUserEmail();
+          expect(email).toBeNull();
 
-      try {
-        const email = await getCurrentUserEmail();
-        expect(email).toBeNull();
-
-        const commits = await getCommits();
-        expect(commits.map((c) => c.message)).toContain('unconfigured commit');
-      } finally {
-        process.env.GIT_CONFIG_GLOBAL = originalEnv.GIT_CONFIG_GLOBAL;
-        process.env.GIT_CONFIG_SYSTEM = originalEnv.GIT_CONFIG_SYSTEM;
-        process.env.HOME = originalEnv.HOME;
-        process.env.XDG_CONFIG_HOME = originalEnv.XDG_CONFIG_HOME;
-      }
+          const commits = await getCommits();
+          expect(commits.map((c) => c.message)).toContain('unconfigured commit');
+        }
+      );
     });
   });
 
