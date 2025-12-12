@@ -78,7 +78,7 @@ describe('author filtering', () => {
     });
   });
 
-  test('returns all commits when --all-authors is true', async () => {
+  test('returns all commits when allAuthors is true', async () => {
     const { repoDir, git } = await createRepo();
     await git.addConfig('user.name', 'Default User');
     await git.addConfig('user.email', 'user@example.com');

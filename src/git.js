@@ -43,6 +43,13 @@ async function getCommits({ since, allAuthors = false } = {}) {
     logOptions['--since'] = since;
   }
 
+  const shouldFilter = !allAuthors;
+  let currentEmail = null;
+
+  if (shouldFilter) {
+    currentEmail = await getCurrentUserEmail();
+  }
+
   try {
     const { all = [] } = await git.log(logOptions);
     const normalized = all.map((entry) => ({
@@ -53,11 +60,10 @@ async function getCommits({ since, allAuthors = false } = {}) {
       date: entry.date,
     }));
 
-    if (allAuthors) {
+    if (!shouldFilter) {
       return normalized.map(stripEmail);
     }
 
-    const currentEmail = await getCurrentUserEmail();
     if (!currentEmail) {
       return normalized.map(stripEmail);
     }
