@@ -4,7 +4,7 @@
  */
 
 async function main(options = {}) {
-  console.log('standup-generator - Coming soon!', options);
+  console.log('standup-generator - Coming soon!');
 }
 
 module.exports = { main };
