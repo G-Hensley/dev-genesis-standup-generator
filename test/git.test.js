@@ -110,6 +110,17 @@ describe('getCommits', () => {
     });
   });
 
+  test('returns all commits when no options provided', async () => {
+    const repoDir = await createRepoWithCommits();
+
+    await withRepo(repoDir, async () => {
+      const commits = await getCommits();
+      const messages = commits.map((c) => c.message);
+
+      expect(messages).toEqual(expect.arrayContaining(['first commit', 'second commit']));
+    });
+  });
+
   test('throws for non-empty-repo errors', async () => {
     const nonRepoDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'standup-git-'));
     repoDirs.push(nonRepoDir);
