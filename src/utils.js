@@ -19,7 +19,8 @@ const RFC_2822_LIKE = /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/;
 
 /**
  * Normalizes human-readable time ranges to git-friendly --since values.
- * Accepts relative phrases ("24 hours ago", "2 days ago", "1 week ago") and day names ("Friday").
+ * Accepts relative phrases ("24 hours ago", "2 days ago", "1 week ago"), day names ("Friday"),
+ * and common date formats (ISO like "2024-01-01" or RFC2822 like "Fri, 01 Jun 2023 12:00:00 +0000").
  * If the input already looks like a git-compatible date, it is passed through.
  * Returns a default value of "24 hours ago" for empty or missing inputs.
  * Throws on unsupported non-empty values with a helpful message.
