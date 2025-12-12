@@ -3,7 +3,7 @@
  * Coordinates git operations, parsing, and output formatting
  */
 
-async function main() {
+async function main(options = {}) {
   console.log('standup-generator - Coming soon!');
 }
 
