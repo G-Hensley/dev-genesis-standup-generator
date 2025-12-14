@@ -7,11 +7,12 @@ const MERGE_PATTERNS = [
   /^merge\s+branch/i,
   /^merge\s+pull\s+request/i,
   /^merge\s+remote-tracking/i,
-  /^merge\s+(?:\S*branch|\S*origin\/\S*|\S+\/\S+)\s+into\s+\S+/i,
+  /^merge\s+origin\/[\w/-]+\s+into\s+[\w/-]+/i,
+  /^merge\s+[\w/-]+\s+into\s+[\w/-]+/i,
 ];
 
 const CONVENTIONAL_REGEX =
-  /^(feat|fix|docs|chore|test|refactor)(\(([^)]+)\))?:\s*(.+)$/i;
+  /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
 /**
  * Returns true if the commit message looks like a merge commit.
@@ -52,12 +53,13 @@ function parseConventionalCommit(message = '') {
     return null;
   }
 
-  const [, type, , scope, description] = match;
+  const [, type, , scope, breaking, description] = match;
 
   return {
     type: type.toLowerCase(),
-    scope: scope || null,
+    scope: scope ? scope.toLowerCase() : null,
     description: description.trim(),
+    breaking: Boolean(breaking),
     raw: message,
   };
 }
