@@ -1,5 +1,10 @@
 const { isMergeCommit, filterMergeCommits } = require('../src/parser');
 
+const {
+  parseConventionalCommit,
+  applyConventionalMetadata,
+} = require('../src/parser');
+
 describe('merge commit filtering', () => {
   test('detects common merge patterns case-insensitively', () => {
     const cases = [
@@ -59,5 +64,47 @@ describe('merge commit filtering', () => {
     const filtered = filterMergeCommits(commits);
     expect(filtered).toHaveLength(3);
     expect(filtered.map((c) => c.message)).toEqual([null, undefined, undefined]);
+  });
+});
+
+describe('conventional commit parsing', () => {
+  test('parses supported prefixes with optional scope', () => {
+    expect(parseConventionalCommit('feat: add login')).toEqual({
+      type: 'feat',
+      scope: null,
+      description: 'add login',
+      raw: 'feat: add login',
+    });
+
+    expect(parseConventionalCommit('FIX(auth): handle expired tokens')).toEqual({
+      type: 'fix',
+      scope: 'auth',
+      description: 'handle expired tokens',
+      raw: 'FIX(auth): handle expired tokens',
+    });
+  });
+
+  test('returns null for non-conventional messages', () => {
+    expect(parseConventionalCommit('improve logging')).toBeNull();
+    expect(parseConventionalCommit(null)).toBeNull();
+  });
+
+  test('applies conventional metadata across commits', () => {
+    const commits = [
+      { message: 'chore: bump deps' },
+      { message: 'docs(readme): add usage' },
+      { message: 'regular commit message' },
+    ];
+
+    const augmented = applyConventionalMetadata(commits);
+    expect(augmented[0].conventional).toMatchObject({
+      type: 'chore',
+      description: 'bump deps',
+    });
+    expect(augmented[1].conventional).toMatchObject({
+      type: 'docs',
+      scope: 'readme',
+    });
+    expect(augmented[2].conventional).toBeNull();
   });
 });
