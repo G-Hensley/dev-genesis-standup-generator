@@ -25,7 +25,7 @@ const RFC_2822_LIKE = /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/;
  * Returns a default value of "24 hours ago" for empty or missing inputs.
  * Throws on unsupported non-empty values with a helpful message.
  *
- * @param {*} input
+ * @param {string} [input] - Optional input string to parse as a time range.
  * @returns {string} git-compatible since value
  */
 function parseSince(input) {

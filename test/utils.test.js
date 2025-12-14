@@ -17,11 +17,17 @@ describe('parseSince', () => {
     expect(parseSince('2 days ago')).toBe('2 days ago');
     expect(parseSince('1 week ago')).toBe('1 week ago');
     expect(parseSince('12 HOURS AGO')).toBe('12 hours ago');
+    expect(parseSince('2  days  ago')).toBe('2  days  ago');
+    expect(parseSince('3 months ago')).toBe('3 months ago');
+    expect(parseSince('1 hours ago')).toBe('1 hours ago');
+    expect(parseSince('1 year ago')).toBe('1 year ago');
   });
 
   test('handles day names', () => {
     expect(parseSince('Friday')).toBe('friday');
     expect(parseSince('monday')).toBe('monday');
+    expect(parseSince('Sunday')).toBe('sunday');
+    expect(() => parseSince('Moanday')).toThrow(/invalid time range/i);
   });
 
   test('passes through ISO and RFC2822-like dates', () => {
