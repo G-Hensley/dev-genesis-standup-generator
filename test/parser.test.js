@@ -6,7 +6,7 @@ describe('merge commit filtering', () => {
       'Merge branch develop into main',
       'merge pull request #123 from feature/xyz',
       'Merge remote-tracking branch origin/main',
-      'MERGE feature into main',
+      'MERGE branch feature into main',
     ];
 
     cases.forEach((msg) => {
@@ -20,6 +20,7 @@ describe('merge commit filtering', () => {
       'Fix typo',
       'chore: bump deps',
       'refactor parser',
+      'Merge sort implementation into algorithm library',
     ];
 
     messages.forEach((msg) => {
@@ -41,5 +42,22 @@ describe('merge commit filtering', () => {
       'feat: add login',
       'fix: bug',
     ]);
+  });
+
+  test('handles empty and missing messages safely', () => {
+    expect(isMergeCommit('')).toBe(false);
+    expect(isMergeCommit(null)).toBe(false);
+    expect(isMergeCommit(undefined)).toBe(false);
+
+    const commits = [
+      { message: null },
+      { other: 'field' },
+      { message: undefined },
+      { message: 'Merge pull request #5' },
+    ];
+
+    const filtered = filterMergeCommits(commits);
+    expect(filtered).toHaveLength(3);
+    expect(filtered.map((c) => c.message)).toEqual([null, undefined, undefined]);
   });
 });

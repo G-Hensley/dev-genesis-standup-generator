@@ -7,7 +7,7 @@ const MERGE_PATTERNS = [
   /^merge\s+branch/i,
   /^merge\s+pull\s+request/i,
   /^merge\s+remote-tracking/i,
-  /^merge\s+.+into\s+.+/i,
+  /^merge\s+(?:\S*branch|\S*origin\/\S*|\S+\/\S+)\s+into\s+\S+/i,
 ];
 
 /**
