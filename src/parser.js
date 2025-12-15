@@ -14,6 +14,7 @@ const CONVENTIONAL_REGEX =
   /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
 const DEFAULT_TRUNCATE_LIMIT = 80;
+const MIN_ELLIPSIS_LIMIT = 5;
 
 /**
  * Returns true if the commit message looks like a merge commit.
@@ -113,13 +114,19 @@ function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
   }
 
   // Very small limits cannot accommodate an ellipsis; just return the slice.
-  if (limit <= 5) {
+  if (limit <= MIN_ELLIPSIS_LIMIT) {
     return firstLine.slice(0, limit);
   }
 
   const cutoff = limit - 3; // account for ellipsis
   const slicePoint = firstLine.lastIndexOf(' ', cutoff);
-  const trimmed = (slicePoint > 0 ? firstLine.slice(0, slicePoint) : firstLine.slice(0, cutoff)).trimEnd();
+  let sliced;
+  if (slicePoint > 0) {
+    sliced = firstLine.slice(0, slicePoint);
+  } else {
+    sliced = firstLine.slice(0, cutoff);
+  }
+  const trimmed = sliced.trimEnd();
 
   return `${trimmed}...`;
 }
