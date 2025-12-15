@@ -12,6 +12,8 @@ describe('merge commit filtering', () => {
       'merge pull request #123 from feature/xyz',
       'Merge remote-tracking branch origin/main',
       'MERGE branch feature into main',
+      'Merge origin/main into develop',
+      'Merge feature/login into develop',
     ];
 
     cases.forEach((msg) => {
@@ -94,6 +96,14 @@ describe('conventional commit parsing', () => {
       description: 'handle tokens',
       breaking: false,
       raw: 'fix(AUTH): handle tokens',
+    });
+
+    expect(parseConventionalCommit('perf(API)!: speed up responses')).toEqual({
+      type: 'perf',
+      scope: 'api',
+      description: 'speed up responses',
+      breaking: true,
+      raw: 'perf(API)!: speed up responses',
     });
   });
 

@@ -7,12 +7,11 @@ const MERGE_PATTERNS = [
   /^merge\s+branch/i,
   /^merge\s+pull\s+request/i,
   /^merge\s+remote-tracking/i,
-  /^merge\s+origin\/[\w/-]+\s+into\s+[\w/-]+/i,
   /^merge\s+[\w/-]+\s+into\s+[\w/-]+/i,
 ];
 
 const CONVENTIONAL_REGEX =
-  /^(feat|fix|docs|chore|test|refactor)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
+  /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
 /**
  * Returns true if the commit message looks like a merge commit.
@@ -39,6 +38,7 @@ function filterMergeCommits(commits = []) {
 /**
  * Parses a conventional commit message and returns its components.
  * Returns null when the message does not follow the expected prefixes.
+ * Note: type and scope are normalized to lowercase.
  *
  * @param {string} message
  * @returns {{type: string, scope: string|null, description: string, breaking: boolean, raw: string}|null}
