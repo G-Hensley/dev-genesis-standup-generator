@@ -91,16 +91,30 @@ function applyConventionalMetadata(commits = []) {
  *
  * @param {string} message
  * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
+ * @throws {RangeError} If limit is negative.
  * @returns {string}
  */
 function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
-  if (typeof message !== 'string' || limit <= 0) {
+  if (typeof message !== 'string') {
+    return '';
+  }
+
+  if (limit < 0) {
+    throw new RangeError('truncateMessage: limit must not be negative');
+  }
+
+  if (limit === 0) {
     return '';
   }
 
   const firstLine = message.split('\n')[0];
   if (firstLine.length <= limit) {
     return firstLine;
+  }
+
+  // Very small limits cannot accommodate an ellipsis; just return the slice.
+  if (limit <= 5) {
+    return firstLine.slice(0, limit);
   }
 
   const cutoff = limit - 3; // account for ellipsis
@@ -118,10 +132,13 @@ function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
  * @returns {Array<{message: string}>}
  */
 function truncateCommitMessages(commits = [], limit = DEFAULT_TRUNCATE_LIMIT) {
-  return commits.map((commit = {}) => ({
-    ...commit,
-    message: truncateMessage(commit.message || '', limit),
-  }));
+  return commits.map((commit) => {
+    const safeCommit = commit && typeof commit === 'object' ? commit : {};
+    return {
+      ...safeCommit,
+      message: truncateMessage(safeCommit.message || '', limit),
+    };
+  });
 }
 
 module.exports = {

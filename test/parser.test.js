@@ -173,6 +173,23 @@ describe('message truncation', () => {
     expect(truncatedWord.endsWith('...')).toBe(true);
   });
 
+  test('handles edge cases and small limits', () => {
+    expect(truncateMessage(undefined, 10)).toBe('');
+    expect(truncateMessage(null, 10)).toBe('');
+    expect(truncateMessage('', 10)).toBe('');
+
+    // Limit zero returns empty, small limits return raw slice without ellipsis
+    expect(truncateMessage('abc', 0)).toBe('');
+    expect(truncateMessage('abc', 1)).toBe('a');
+    expect(truncateMessage('abc', 2)).toBe('ab');
+    expect(truncateMessage('abc', 3)).toBe('abc');
+
+    expect(() => truncateMessage('abc', -1)).toThrow(RangeError);
+
+    const multiLine = 'first line is long enough\nsecond line ignored';
+    expect(truncateMessage(multiLine, 5)).toBe('first');
+  });
+
   test('truncates commit lists without mutating other fields', () => {
     const commits = [
       { message: 'a'.repeat(90), id: 1 },
@@ -183,5 +200,15 @@ describe('message truncation', () => {
     expect(truncated[0].message.length).toBeLessThanOrEqual(80);
     expect(truncated[0].id).toBe(1);
     expect(truncated[1].message).toBe('short');
+  });
+
+  test('handles empty commits array and missing messages', () => {
+    expect(truncateCommitMessages([], 80)).toEqual([]);
+
+    const commits = [{ id: 1 }, null, undefined];
+    const truncated = truncateCommitMessages(commits, 5);
+    expect(truncated[0].message).toBe('');
+    expect(truncated[1].message).toBe('');
+    expect(truncated[2].message).toBe('');
   });
 });
