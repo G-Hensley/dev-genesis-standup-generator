@@ -13,6 +13,8 @@ const MERGE_PATTERNS = [
 const CONVENTIONAL_REGEX =
   /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
+const DEFAULT_TRUNCATE_LIMIT = 80;
+
 /**
  * Returns true if the commit message looks like a merge commit.
  * Matching is case-insensitive and covers common merge message patterns.
@@ -83,9 +85,51 @@ function applyConventionalMetadata(commits = []) {
   }));
 }
 
+/**
+ * Truncates a commit message to the specified limit, adding an ellipsis when truncated.
+ * Attempts to avoid cutting mid-word by trimming back to the last space before the cutoff.
+ *
+ * @param {string} message
+ * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
+ * @returns {string}
+ */
+function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
+  if (typeof message !== 'string' || limit <= 0) {
+    return '';
+  }
+
+  const firstLine = message.split('\n')[0];
+  if (firstLine.length <= limit) {
+    return firstLine;
+  }
+
+  const cutoff = limit - 3; // account for ellipsis
+  const slicePoint = firstLine.lastIndexOf(' ', cutoff);
+  const trimmed = (slicePoint > 0 ? firstLine.slice(0, slicePoint) : firstLine.slice(0, cutoff)).trimEnd();
+
+  return `${trimmed}...`;
+}
+
+/**
+ * Returns a new list of commits with their message truncated to the limit.
+ *
+ * @param {Array<{message: string}>} commits
+ * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
+ * @returns {Array<{message: string}>}
+ */
+function truncateCommitMessages(commits = [], limit = DEFAULT_TRUNCATE_LIMIT) {
+  return commits.map((commit = {}) => ({
+    ...commit,
+    message: truncateMessage(commit.message || '', limit),
+  }));
+}
+
 module.exports = {
   isMergeCommit,
   filterMergeCommits,
   parseConventionalCommit,
   applyConventionalMetadata,
+  truncateMessage,
+  truncateCommitMessages,
+  DEFAULT_TRUNCATE_LIMIT,
 };

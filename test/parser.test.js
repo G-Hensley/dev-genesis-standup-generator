@@ -3,6 +3,9 @@ const {
   filterMergeCommits,
   parseConventionalCommit,
   applyConventionalMetadata,
+  truncateMessage,
+  truncateCommitMessages,
+  DEFAULT_TRUNCATE_LIMIT,
 } = require('../src/parser');
 
 describe('merge commit filtering', () => {
@@ -146,5 +149,39 @@ describe('conventional commit parsing', () => {
     expect(augmented[5].conventional).toMatchObject({
       scope: 'auth',
     });
+  });
+});
+
+describe('message truncation', () => {
+  test('truncates with ellipsis and keeps boundary when possible', () => {
+    const short = 'short message';
+    expect(truncateMessage(short, DEFAULT_TRUNCATE_LIMIT)).toBe(short);
+
+    const exact = 'a'.repeat(DEFAULT_TRUNCATE_LIMIT);
+    expect(truncateMessage(exact, DEFAULT_TRUNCATE_LIMIT)).toBe(exact);
+
+    const longWithSpaces =
+      'This is a very long commit message that should be truncated at a sensible boundary to keep it readable';
+    const truncated = truncateMessage(longWithSpaces, 80);
+    expect(truncated.endsWith('...')).toBe(true);
+    expect(truncated.length).toBeLessThanOrEqual(80);
+    expect(truncated).toContain('sensible');
+
+    const longSingleWord = 'a'.repeat(100);
+    const truncatedWord = truncateMessage(longSingleWord, 80);
+    expect(truncatedWord.length).toBeLessThanOrEqual(80);
+    expect(truncatedWord.endsWith('...')).toBe(true);
+  });
+
+  test('truncates commit lists without mutating other fields', () => {
+    const commits = [
+      { message: 'a'.repeat(90), id: 1 },
+      { message: 'short', id: 2 },
+    ];
+
+    const truncated = truncateCommitMessages(commits, 80);
+    expect(truncated[0].message.length).toBeLessThanOrEqual(80);
+    expect(truncated[0].id).toBe(1);
+    expect(truncated[1].message).toBe('short');
   });
 });
