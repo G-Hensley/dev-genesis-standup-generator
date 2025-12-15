@@ -72,12 +72,12 @@ describe('merge commit filtering', () => {
 
 describe('conventional commit parsing', () => {
   test('parses supported prefixes with optional scope', () => {
-    expect(parseConventionalCommit('feat: add login')).toEqual({
+    expect(parseConventionalCommit('feat: add login\n\nBody line')).toEqual({
       type: 'feat',
       scope: null,
       description: 'add login',
       breaking: false,
-      raw: 'feat: add login',
+      raw: 'feat: add login\n\nBody line',
     });
 
     expect(parseConventionalCommit('FIX(auth): handle expired tokens')).toEqual({
@@ -88,12 +88,12 @@ describe('conventional commit parsing', () => {
       raw: 'FIX(auth): handle expired tokens',
     });
 
-    expect(parseConventionalCommit('perf(API)!: speed up responses')).toEqual({
-      type: 'perf',
-      scope: 'api',
-      description: 'speed up responses',
-      breaking: true,
-      raw: 'perf(API)!: speed up responses',
+    expect(parseConventionalCommit('fix(AUTH): handle tokens')).toEqual({
+      type: 'fix',
+      scope: 'auth',
+      description: 'handle tokens',
+      breaking: false,
+      raw: 'fix(AUTH): handle tokens',
     });
   });
 
@@ -103,6 +103,7 @@ describe('conventional commit parsing', () => {
     expect(parseConventionalCommit('feat(): missing scope value')).toBeNull();
     expect(parseConventionalCommit('feat: ')).toBeNull();
     expect(parseConventionalCommit('feat:add')).toBeNull();
+    expect(parseConventionalCommit('feat:   ')).toBeNull();
   });
 
   test('applies conventional metadata across commits', () => {

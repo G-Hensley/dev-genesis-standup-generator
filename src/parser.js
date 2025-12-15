@@ -1,6 +1,6 @@
 /**
  * Commit message parser module
- * Handles merge commit filtering, conventional commit parsing, and message truncation
+ * Handles merge commit filtering and conventional commit parsing
  */
 
 const MERGE_PATTERNS = [
@@ -12,7 +12,7 @@ const MERGE_PATTERNS = [
 ];
 
 const CONVENTIONAL_REGEX =
-  /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
+  /^(feat|fix|docs|chore|test|refactor)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
 /**
  * Returns true if the commit message looks like a merge commit.
@@ -48,17 +48,22 @@ function parseConventionalCommit(message = '') {
     return null;
   }
 
-  const match = message.match(CONVENTIONAL_REGEX);
+  const firstLine = message.split('\n')[0];
+  const match = firstLine.match(CONVENTIONAL_REGEX);
   if (!match) {
     return null;
   }
 
   const [, type, , scope, breaking, description] = match;
+  const trimmedDescription = description.trim();
+  if (!trimmedDescription) {
+    return null;
+  }
 
   return {
     type: type.toLowerCase(),
     scope: scope ? scope.toLowerCase() : null,
-    description: description.trim(),
+    description: trimmedDescription,
     breaking: Boolean(breaking),
     raw: message,
   };
