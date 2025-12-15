@@ -14,6 +14,10 @@ const CONVENTIONAL_REGEX =
   /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
 const DEFAULT_TRUNCATE_LIMIT = 80;
+/**
+ * Minimum length at which adding an ellipsis remains useful.
+ * Below this, we return the raw slice without appending "...".
+ */
 const MIN_ELLIPSIS_LIMIT = 5;
 
 /**

@@ -165,7 +165,7 @@ describe('message truncation', () => {
     const truncated = truncateMessage(longWithSpaces, 80);
     expect(truncated.endsWith('...')).toBe(true);
     expect(truncated.length).toBeLessThanOrEqual(80);
-    expect(truncated).toContain('sensible');
+    expect(truncated).toMatch(/[A-Za-z0-9]\.{3}$/); // ellipsis should follow a character, not a space
 
     const longSingleWord = 'a'.repeat(100);
     const truncatedWord = truncateMessage(longSingleWord, 80);
