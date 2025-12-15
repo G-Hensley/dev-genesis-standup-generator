@@ -41,7 +41,7 @@ function filterMergeCommits(commits = []) {
  * Returns null when the message does not follow the expected prefixes.
  *
  * @param {string} message
- * @returns {{type: string, scope: string|null, description: string, raw: string}|null}
+ * @returns {{type: string, scope: string|null, description: string, breaking: boolean, raw: string}|null}
  */
 function parseConventionalCommit(message = '') {
   if (typeof message !== 'string') {
