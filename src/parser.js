@@ -16,7 +16,7 @@ const CONVENTIONAL_REGEX =
 const DEFAULT_TRUNCATE_LIMIT = 80;
 /**
  * Minimum length at which adding an ellipsis remains useful.
- * Below this, we return the raw slice without appending "...".
+ * At or below this, we return the raw slice without appending "...".
  */
 const MIN_ELLIPSIS_LIMIT = 5;
 
@@ -94,7 +94,7 @@ function applyConventionalMetadata(commits = []) {
  * Truncates a commit message to the specified limit, adding an ellipsis when truncated.
  * Attempts to avoid cutting mid-word by trimming back to the last space before the cutoff.
  *
- * @param {string} message
+ * @param {string} [message='']
  * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
  * @throws {RangeError} If limit is negative.
  * @returns {string}
@@ -138,7 +138,7 @@ function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
 /**
  * Returns a new list of commits with their message truncated to the limit.
  *
- * @param {Array<{message: string}>} commits
+ * @param {Array<{message?: string, [key: string]: any}>} commits
  * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
  * @returns {Array<{message: string}>}
  */

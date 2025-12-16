@@ -183,6 +183,8 @@ describe('message truncation', () => {
     expect(truncateMessage('abc', 1)).toBe('a');
     expect(truncateMessage('abc', 2)).toBe('ab');
     expect(truncateMessage('abc', 3)).toBe('abc');
+    expect(truncateMessage('hello', 4)).toBe('hell');
+    expect(truncateMessage('hello', 5)).toBe('hello');
 
     expect(() => truncateMessage('abc', -1)).toThrow(RangeError);
 
