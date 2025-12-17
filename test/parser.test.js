@@ -3,6 +3,9 @@ const {
   filterMergeCommits,
   parseConventionalCommit,
   applyConventionalMetadata,
+  truncateMessage,
+  truncateCommitMessages,
+  DEFAULT_TRUNCATE_LIMIT,
 } = require('../src/parser');
 
 describe('merge commit filtering', () => {
@@ -146,5 +149,70 @@ describe('conventional commit parsing', () => {
     expect(augmented[5].conventional).toMatchObject({
       scope: 'auth',
     });
+  });
+});
+
+describe('message truncation', () => {
+  test('truncates with ellipsis and keeps boundary when possible', () => {
+    const short = 'short message';
+    expect(truncateMessage(short, DEFAULT_TRUNCATE_LIMIT)).toBe(short);
+
+    const exact = 'a'.repeat(DEFAULT_TRUNCATE_LIMIT);
+    expect(truncateMessage(exact, DEFAULT_TRUNCATE_LIMIT)).toBe(exact);
+
+    const longWithSpaces =
+      'This is a very long commit message that should be truncated at a sensible boundary to keep it readable';
+    const truncated = truncateMessage(longWithSpaces, 80);
+    expect(truncated.endsWith('...')).toBe(true);
+    expect(truncated.length).toBeLessThanOrEqual(80);
+    expect(truncated).toMatch(/[A-Za-z0-9]\.{3}$/); // ellipsis should follow a character, not a space
+
+    const longSingleWord = 'a'.repeat(100);
+    const truncatedWord = truncateMessage(longSingleWord, 80);
+    expect(truncatedWord.length).toBeLessThanOrEqual(80);
+    expect(truncatedWord.endsWith('...')).toBe(true);
+  });
+
+  test('handles edge cases and small limits', () => {
+    expect(truncateMessage(undefined, 10)).toBe('');
+    expect(truncateMessage(null, 10)).toBe('');
+    expect(truncateMessage('', 10)).toBe('');
+    expect(() => truncateMessage('abc', '10')).toThrow(TypeError);
+    expect(() => truncateMessage('abc', NaN)).toThrow(TypeError);
+
+    // Limit zero returns empty, small limits return raw slice without ellipsis
+    expect(truncateMessage('abc', 0)).toBe('');
+    expect(truncateMessage('abc', 1)).toBe('a');
+    expect(truncateMessage('abc', 2)).toBe('ab');
+    expect(truncateMessage('abc', 3)).toBe('abc');
+    expect(truncateMessage('hello', 4)).toBe('hell');
+    expect(truncateMessage('hello', 5)).toBe('hello');
+
+    expect(() => truncateMessage('abc', -1)).toThrow(RangeError);
+
+    const multiLine = 'first line is long enough\nsecond line ignored';
+    expect(truncateMessage(multiLine, 5)).toBe('first');
+  });
+
+  test('truncates commit lists without mutating other fields', () => {
+    const commits = [
+      { message: 'a'.repeat(90), id: 1 },
+      { message: 'short', id: 2 },
+    ];
+
+    const truncated = truncateCommitMessages(commits, 80);
+    expect(truncated[0].message.length).toBeLessThanOrEqual(80);
+    expect(truncated[0].id).toBe(1);
+    expect(truncated[1].message).toBe('short');
+  });
+
+  test('handles empty commits array and missing messages', () => {
+    expect(truncateCommitMessages([], 80)).toEqual([]);
+
+    const commits = [{ id: 1 }, null, undefined];
+    const truncated = truncateCommitMessages(commits, 5);
+    expect(truncated[0].message).toBe('');
+    expect(truncated[1].message).toBe('');
+    expect(truncated[2].message).toBe('');
   });
 });

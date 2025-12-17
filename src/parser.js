@@ -13,6 +13,13 @@ const MERGE_PATTERNS = [
 const CONVENTIONAL_REGEX =
   /^(feat|fix|docs|chore|test|refactor|style|perf|ci|build)(\(([^)]+)\))?(!)?:\s+(.+)$/i;
 
+const DEFAULT_TRUNCATE_LIMIT = 80;
+/**
+ * Minimum length at which adding an ellipsis remains useful.
+ * At or below this, we return the raw slice without appending "...".
+ */
+const MIN_ELLIPSIS_LIMIT = 5;
+
 /**
  * Returns true if the commit message looks like a merge commit.
  * Matching is case-insensitive and covers common merge message patterns.
@@ -83,9 +90,78 @@ function applyConventionalMetadata(commits = []) {
   }));
 }
 
+/**
+ * Truncates a commit message to the specified limit, adding an ellipsis when truncated.
+ * Attempts to avoid cutting mid-word by trimming back to the last space before the cutoff.
+ *
+ * @param {string} [message='']
+ * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
+ * @throws {RangeError} If limit is negative.
+ * @returns {string}
+ */
+function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
+  if (typeof message !== 'string') {
+    return '';
+  }
+
+  if (typeof limit !== 'number' || Number.isNaN(limit)) {
+    throw new TypeError('truncateMessage: limit must be a valid number');
+  }
+
+  if (limit < 0) {
+    throw new RangeError('truncateMessage: limit must not be negative');
+  }
+
+  if (limit === 0) {
+    return '';
+  }
+
+  const firstLine = message.split('\n')[0];
+  if (firstLine.length <= limit) {
+    return firstLine;
+  }
+
+  // Very small limits cannot accommodate an ellipsis; just return the slice.
+  if (limit <= MIN_ELLIPSIS_LIMIT) {
+    return firstLine.slice(0, limit);
+  }
+
+  const cutoff = limit - 3; // account for ellipsis
+  const slicePoint = firstLine.lastIndexOf(' ', cutoff);
+  let sliced;
+  if (slicePoint > 0) {
+    sliced = firstLine.slice(0, slicePoint);
+  } else {
+    sliced = firstLine.slice(0, cutoff);
+  }
+  const trimmed = sliced.trimEnd();
+
+  return `${trimmed}...`;
+}
+
+/**
+ * Returns a new list of commits with their message truncated to the limit.
+ *
+ * @param {Array<{message?: string, [key: string]: any}>} commits
+ * @param {number} [limit=DEFAULT_TRUNCATE_LIMIT]
+ * @returns {Array<{message: string}>}
+ */
+function truncateCommitMessages(commits = [], limit = DEFAULT_TRUNCATE_LIMIT) {
+  return commits.map((commit) => {
+    const safeCommit = commit && typeof commit === 'object' ? commit : {};
+    return {
+      ...safeCommit,
+      message: truncateMessage(safeCommit.message || '', limit),
+    };
+  });
+}
+
 module.exports = {
   isMergeCommit,
   filterMergeCommits,
   parseConventionalCommit,
   applyConventionalMetadata,
+  truncateMessage,
+  truncateCommitMessages,
+  DEFAULT_TRUNCATE_LIMIT,
 };
