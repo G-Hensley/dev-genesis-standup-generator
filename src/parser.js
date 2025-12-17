@@ -104,6 +104,10 @@ function truncateMessage(message = '', limit = DEFAULT_TRUNCATE_LIMIT) {
     return '';
   }
 
+  if (typeof limit !== 'number' || Number.isNaN(limit)) {
+    throw new TypeError('truncateMessage: limit must be a valid number');
+  }
+
   if (limit < 0) {
     throw new RangeError('truncateMessage: limit must not be negative');
   }

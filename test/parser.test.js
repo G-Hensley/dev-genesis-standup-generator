@@ -177,6 +177,8 @@ describe('message truncation', () => {
     expect(truncateMessage(undefined, 10)).toBe('');
     expect(truncateMessage(null, 10)).toBe('');
     expect(truncateMessage('', 10)).toBe('');
+    expect(() => truncateMessage('abc', '10')).toThrow(TypeError);
+    expect(() => truncateMessage('abc', NaN)).toThrow(TypeError);
 
     // Limit zero returns empty, small limits return raw slice without ellipsis
     expect(truncateMessage('abc', 0)).toBe('');
